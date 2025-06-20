@@ -11,28 +11,59 @@ final class TransactionsService {
     
 //MARK: - MockData
     private var mockTransactions: [Transaction] = [
+        
         Transaction(
             id: 1,
             accountId: 1,
             categoryId: 51,
-            amount: -1500.00,
+            amount: 1500.00,
+            transactionDate: Date(), // 3 дня назад
+            comment: "Покупка продуктов",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 2,
+            accountId: 1,
+            categoryId: 51,
+            amount: 1500.00,
+            transactionDate: Date(), // 3 дня назад
+            comment: "Покупка продуктов",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 3,
+            accountId: 1,
+            categoryId: 51,
+            amount: 1500.00,
+            transactionDate: Date(), // 3 дня назад
+            comment: "Покупка продуктов",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 4,
+            accountId: 1,
+            categoryId: 51,
+            amount: 1500.00,
             transactionDate: Date().addingTimeInterval(-86400 * 3), // 3 дня назад
             comment: "Покупка продуктов",
             createdAt: Date().addingTimeInterval(-86400 * 3),
             updatedAt: Date().addingTimeInterval(-86400 * 3)
         ),
         Transaction(
-            id: 2,
+            id: 5,
             accountId: 1,
             categoryId: 52,
-            amount: -350.50,
+            amount: 350.50,
             transactionDate: Date().addingTimeInterval(-86400 * 1), // 1 день назад
             comment: "Кофе с коллегой",
             createdAt: Date().addingTimeInterval(-86400 * 1),
             updatedAt: Date().addingTimeInterval(-86400 * 1)
         ),
         Transaction(
-            id: 3,
+            id: 7,
             accountId: 1,
             categoryId: 1,
             amount: 50000.00,
@@ -40,15 +71,75 @@ final class TransactionsService {
             comment: "Зарплата за март",
             createdAt: Date().addingTimeInterval(-86400 * 5),
             updatedAt: Date().addingTimeInterval(-86400 * 5)
+        ),
+        Transaction(
+            id: 6,
+            accountId: 1,
+            categoryId: 52,
+            amount: 350.50,
+            transactionDate: Date(),
+            comment: "Кофе с коллегой",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 8,
+            accountId: 1,
+            categoryId: 52,
+            amount: 350.50,
+            transactionDate: Date(),
+            comment: "Кофе с коллегой",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 9,
+            accountId: 1,
+            categoryId: 52,
+            amount: 350.50,
+            transactionDate: Date(),
+            comment: "Кофе с коллегой",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 10,
+            accountId: 1,
+            categoryId: 52,
+            amount: 350.50,
+            transactionDate: Date(),
+            comment: "Кофе с коллегой",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 11,
+            accountId: 1,
+            categoryId: 52,
+            amount: 350.50,
+            transactionDate: Date(),
+            comment: "Кофе с коллегой",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        Transaction(
+            id: 12,
+            accountId: 1,
+            categoryId: 52,
+            amount: 350.50,
+            transactionDate: Date(),
+            comment: "Кофе с коллегой",
+            createdAt: Date(),
+            updatedAt: Date()
         )
     ]
     
 //MARK: - Fetch Transaction For Period
-    func fetchTransactions(forPeriod period: ClosedRange<Date>) async throws -> [Transaction] {
+    func fetchTransactions(from startDate: Date, to endDate: Date) async throws -> [Transaction] {
         try await Task.sleep(nanoseconds: 700_000_000) // Имитация задержки
         
         return mockTransactions.filter {
-            period.contains($0.transactionDate)
+            $0.transactionDate >= startDate && $0.transactionDate <= endDate
         }.sorted {
             $0.transactionDate > $1.transactionDate // Сортировка по дате (новые сначала)
         }
