@@ -11,5 +11,5 @@ enum SortingType: String, CaseIterable, Identifiable {
     case forDate = "По дате"
     case forAmount = "По сумме"
     
-    var id: String { rawValue }
+    var id: Self { self }
 }
