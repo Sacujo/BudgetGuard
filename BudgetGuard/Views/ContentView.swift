@@ -34,7 +34,7 @@ struct ContentView: View {
                 }
             
             // Вкладка "Счет"
-            AccountView()
+            BankAccountView()
                 .tabItem {
                     Image("calculator")
                     Text("Счет")
