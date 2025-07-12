@@ -91,7 +91,7 @@ struct HistoryListView: View {
                     
                     Section(header: Text("Операции").font(.caption)) {
                         ForEach(viewModel.transactions) { transaction in
-                            NavigationLink(destination: EmptyView()) {
+                            NavigationLink(destination: TransactionEditView(transaction, direction: viewModel.direction)) {
                                 TransactionRow(transaction: transaction, category: viewModel.category(for: transaction))
                             }
                         }
@@ -105,7 +105,7 @@ struct HistoryListView: View {
                             Image(systemName: "arrow.up.arrow.down")
                                 .foregroundColor(Color(.toolBarItem))
                         }
-                        Button(action: {}) {
+                        NavigationLink(destination: AnalysisView(direction: viewModel.direction)) {
                             Image(systemName: "doc")
                                 .foregroundColor(Color(.toolBarItem))
                         }
