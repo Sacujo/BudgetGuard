@@ -59,8 +59,6 @@ struct ContentView: View {
 }
 
 // Заглушки для экранов
-struct AccountView: View { var body: some View { Text("Экран счета") } }
-struct CategoriesView: View { var body: some View { Text("Экран статей") } }
 struct SettingsView: View { var body: some View { Text("Экран настроек") }
 }
 
