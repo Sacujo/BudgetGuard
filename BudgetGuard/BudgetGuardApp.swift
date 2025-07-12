@@ -9,6 +9,22 @@ import SwiftUI
 
 @main
 struct BudgetGuardApp: App {
+    init() {
+        navBar()
+    }
+    
+    private func navBar () {
+         let navBarAppearance = UINavigationBarAppearance()
+         navBarAppearance.configureWithOpaqueBackground()
+         navBarAppearance.backgroundColor = .systemGroupedBackground
+         navBarAppearance.shadowColor = .clear
+         UINavigationBar.appearance().standardAppearance = navBarAppearance
+         if #available (iOS 15.0, *) {
+             UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
+         }
+
+     }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

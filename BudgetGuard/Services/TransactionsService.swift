@@ -193,7 +193,7 @@ final class TransactionsService {
     }
     
 //MARK: - Delete Transaction
-    func deleteTransaction(id: Int) async throws {
+    func deleteTransaction(withId id: Int) async throws {
         try await Task.sleep(nanoseconds: 500_000_000)
         
         guard let index = mockTransactions.firstIndex(where: { $0.id == id }) else {
