@@ -83,11 +83,10 @@ final class AnalysisPresenter: AnalysisPresenterProtocol {
         do {
             let categories = try await categoriesService.fetchCategories(direction: direction)
             self.categories = categories
-            let categoriesIds = categories.map{ $0.id }
             
             let transactionsByPeriod = try await transactionsService.fetchTransactions(from: start, to: end)
             transactions = transactionsByPeriod.filter {
-                categoriesIds.contains($0.categoryId)
+                categories.contains($0.category)
             }
         } catch {
             print(error.localizedDescription)

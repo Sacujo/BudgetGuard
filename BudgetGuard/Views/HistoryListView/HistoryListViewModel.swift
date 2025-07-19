@@ -49,12 +49,12 @@ final class HistoryListViewModel: ObservableObject {
         do {
             let categories = try await categoriesService.fetchCategories(direction: direction)
             self.categories = categories
-            let categoriesIds = categories.map{ $0.id }
+
             
             let transactionsByPeriod = try await transactionsService.fetchTransactions(from: startOfDay, to: endOfDay)
             
             transactions = transactionsByPeriod.filter {
-                categoriesIds.contains($0.categoryId)
+                categories.contains($0.category)
             }
             
             switch sortingType {
@@ -72,6 +72,6 @@ final class HistoryListViewModel: ObservableObject {
     }
     
     func category(for transaction: Transaction) -> Category {
-        categories.first(where: { $0.id == transaction.categoryId }) ?? Category(id: 58, name: "Образование", emoji: "📚", isIncome: false)
+        categories.first(where: { $0 == transaction.category }) ?? Category(id: 58, name: "Образование", emoji: "📚", direction: .outcome)
     }
 }

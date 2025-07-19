@@ -8,84 +8,51 @@
 import Foundation
 
 extension Transaction {
-    // Заголовок CSV файла
-    static var csvHeader: String {
-        return "id,accountId,categoryId,amount,transactionDate,comment,createdAt,updatedAt"
-    }
-    
-    // Представление транзакции в CSV строке
-    var csvString: String {
-        let dateFormatter = ISO8601DateFormatter()
-        let commentEscaped = comment?.replacingOccurrences(of: "\"", with: "\"\"") ?? ""
-        
-        return [
-            "\(id)",
-            "\(accountId)",
-            "\(categoryId)",
-            amount.description,
-            dateFormatter.string(from: transactionDate),
-            "\"\(commentEscaped)\"", // Заключаем комментарий в кавычки
-            dateFormatter.string(from: createdAt),
-            dateFormatter.string(from: updatedAt)
-        ].joined(separator: ",")
-    }
-    
-    // Парсинг CSV строки в Transaction
-    static func parse(csvString: String) -> Transaction? {
-        let scanner = Scanner(string: csvString)
-        scanner.charactersToBeSkipped = .whitespacesAndNewlines
-        
-        var fields = [String]()
-        var currentField = ""
-        var inQuotes = false
-        
-        while !scanner.isAtEnd {
-            if let char = scanner.scanCharacter() {
-                if char == "\"" {
-                    if inQuotes && scanner.scanString("\"") != nil {
-                        // Экранированная кавычка внутри строки
-                        currentField.append("\"")
-                    } else {
-                        inQuotes.toggle()
-                    }
-                } else if char == "," && !inQuotes {
-                    fields.append(currentField)
-                    currentField = ""
-                } else {
-                    currentField.append(char)
-                }
-            }
-        }
-        fields.append(currentField)
-        
-        guard fields.count >= 8 else { return nil }
-        
-        let dateFormatter = ISO8601DateFormatter()
-        
-        guard let id = Int(fields[0]),
-              let accountId = Int(fields[1]),
-              let categoryId = Int(fields[2]),
-              let amount = Decimal(string: fields[3]),
-              let transactionDate = dateFormatter.date(from: fields[4]),
-              let createdAt = dateFormatter.date(from: fields[6]),
-              let updatedAt = dateFormatter.date(from: fields[7])
-        else {
+    static func parseCSV(from line: String) -> Transaction? {
+        let components = line
+            .split(separator: ",", omittingEmptySubsequences: false)
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+
+        guard components.count >= 14 else { return nil }
+
+        let isoFormatter = ISO8601DateFormatter()
+
+        guard let id = Int(components[0]),
+              let accountId = Int(components[1]),
+              let accountBalance = Decimal(string: components[3]),
+              let categoryId = Int(components[5]),
+              let categoryEmoji = components[7].first,
+              let isIncome = Bool(components[8]),
+              let amount = Decimal(string: components[9]),
+              let transactionDate = isoFormatter.date(from: components[10]),
+              let createdAt = isoFormatter.date(from: components[12]),
+              let updatedAt = isoFormatter.date(from: components[13]) else {
             return nil
         }
-        
-        // Удаляем кавычки из комментария если они есть
-        var comment = fields[5]
-        if comment.hasPrefix("\"") && comment.hasSuffix("\"") {
-            comment = String(comment.dropFirst().dropLast())
-        }
-        
+
+        let account = AccountBrief(
+            id: accountId,
+            name: components[2],
+            balance: accountBalance,
+            currency: components[4]
+        )
+
+        let category = Category(
+            id: categoryId,
+            name: components[6],
+            emoji: String(categoryEmoji),
+            direction: isIncome ? Direction.income : Direction.outcome
+        )
+
+        let comment = components[11].isEmpty ? nil : components[11]
+
         return Transaction(
             id: id,
-            accountId: accountId,
-            categoryId: categoryId,
+            account: account,
+            category: category,
             amount: amount,
             transactionDate: transactionDate,
-            comment: comment.isEmpty ? nil : comment,
+            comment: comment,
             createdAt: createdAt,
             updatedAt: updatedAt
         )
