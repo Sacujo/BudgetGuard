@@ -62,7 +62,7 @@ final class TransactionsListViewModel: ObservableObject {
     
     
     func category(for transaction: Transaction) -> Category {
-        categories.first(where: { $0.id == transaction.categoryId }) ?? Category(id: 58, name: "Образование", emoji: "📚", isIncome: false)
+        categories.first(where: { $0.id == transaction.categoryId }) ?? Category(id: 58, name: "Образование", emoji: "📚", direction: .outcome)
     }
 
 }

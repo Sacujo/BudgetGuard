@@ -20,7 +20,7 @@ struct CategoriesView: View {
         NavigationStack {
             List {
                 Section(String.categoriesSectionTitle) {
-                    ForEach(viewModel.filteredCategories) { category in
+                    ForEach(viewModel.categories) { category in
                         CategoryRow(
                             category: category
                         )
@@ -41,11 +41,11 @@ struct CategoriesView: View {
                 }
             }
             .task {
-                await viewModel.fetchCategories()
+                viewModel.fetchCategories()
+            }
             }
         }
     }
-}
 
 // MARK: - Constants
 fileprivate extension String {

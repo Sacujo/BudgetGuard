@@ -26,24 +26,31 @@ import Foundation
 
 
      // MARK: - Published
-     @Published var isLoading: Bool = false
      @Published var searchText: String = ""
      @Published private(set) var categories: [Category] = []
 
      // MARK: - Lifecycle
      init() {
          self.categoriesService = CategoriesService()
+         fetchCategories()
      }
 
      // MARK: - Methods
-     func fetchCategories() async {
-         isLoading = true
-         defer { isLoading = false }
-
-         do {
-             categories = try await categoriesService.fetchCategories()
-         } catch {
-             print(error.localizedDescription)
+     
+     func fetchCategories() {
+         Task {
+             do {
+                 let fetchedCategories = try await categoriesService.fetchCategories()
+                 await MainActor.run {
+                     self.categories = fetchedCategories
+//                     self.filteredCategories = fetchedCategories
+                     
+                 }
+             } catch {
+                 await MainActor.run {
+                     print(error.localizedDescription)
+                 }
+             }
          }
      }
  }
