@@ -201,7 +201,7 @@ extension AnalysisViewController: UITableViewDataSource, UITableViewDelegate {
                  guard let cell = tableView.dequeueReusableCell(withIdentifier: TotalAmountTableViewCell.reuseIdentifier, for: indexPath) as? TotalAmountTableViewCell else {
                      return UITableViewCell()
                  }
-                 cell.setupCell(withValue: presenter.totalAmount, for: presenter.bankAccount?.currency ?? "")
+                 cell.setupCell(withValue: presenter.totalAmount, for: presenter.bankAccount?.currency.symbol ?? "")
                  setupSeparator(for: cell, at: indexPath)
                  return cell
              case .sorting:
@@ -217,12 +217,11 @@ extension AnalysisViewController: UITableViewDataSource, UITableViewDelegate {
                  return UITableViewCell()
              }
              let transaction = presenter.transactions[indexPath.row]
-             let category = presenter.categories.first(where: { $0.id == transaction.categoryId })
              let amount = NSDecimalNumber(decimal: transaction.amount)
              let sum = NSDecimalNumber(decimal: presenter.totalAmount)
              let percentDecimal = amount.multiplying(by: 100).dividing(by: sum)
              let percent = percentDecimal.rounding(accordingToBehavior: nil).intValue
-             cell.setupCell(with: transaction, category: category, currency: presenter.bankAccount?.currency ?? "OOPS",  percent: percent, delegate: self)
+             cell.setupCell(with: transaction,percent: percent, delegate: self)
              setupSeparator(for: cell, at: indexPath)
              return cell
          }

@@ -11,11 +11,13 @@ final class TransactionsListViewModel: ObservableObject {
     
     private let categoriesService = CategoriesService()
     private let transactionsService = TransactionsService()
+    private let bankAccountService = BankAccountsService()
     
-    @Published private(set) var transactions: [Transaction] = []
+    @Published var transactions: [Transaction] = []
     @Published private(set) var categories: [Category] = []
     @Published var isLoading = false
     @Published var sortingType: SortingType = .forDate
+    @Published var bankAccount: BankAccount?
     
     var totalAmount: Decimal {
         transactions.reduce(0) { $0 + $1.amount }
@@ -27,42 +29,55 @@ final class TransactionsListViewModel: ObservableObject {
         self.direction = direction
     }
     
-    func reloadTransactions() async {
+    func reloadTransactions() {
+        
         isLoading = true
         defer { isLoading = false }
-        
-        do {
-            let categories = try await categoriesService.fetchCategories(direction: direction)
-            self.categories = categories
-            let categoriesIds = categories.map{ $0.id }
-            
-            let calendar = Calendar.current
-            let startDate = calendar.startOfDay(for: Date())
-            guard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else { return }
-            
-            let todayTransactions = try await transactionsService.fetchTransactions(from: startDate, to: endDate)
-            
-            transactions = todayTransactions.filter {
-                categoriesIds.contains($0.categoryId)
+        Task {
+            do {
+                await fetchAccount()
+                
+                let categories = try await categoriesService.fetchCategories(direction: direction)
+                await MainActor.run {
+                    self.categories = categories
+                }
+                let calendar = Calendar.current
+                let startDate = calendar.startOfDay(for: Date())
+                guard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else { return }
+                
+                let todayTransactions = try await transactionsService.fetchTransactions(from: startDate, to: endDate)
+                
+                await MainActor.run {
+                    transactions = todayTransactions.filter { $0.category.direction == direction }
+                }
+                switch sortingType {
+                case .forDate:
+                    await MainActor.run {
+                        self.transactions = transactions.sorted { $0.transactionDate > $1.transactionDate }
+                    }
+                   
+                case .forAmount:
+                    await MainActor.run {
+                        transactions = transactions.sorted { $0.amount > $1.amount }
+                    }
+                }
+                
+                
+            } catch {
+                print(error.localizedDescription)
             }
-            
-            switch sortingType {
-            case .forDate:
-                transactions = transactions.sorted { $0.transactionDate > $1.transactionDate }
-            case .forAmount:
-                transactions = transactions.sorted { $0.amount > $1.amount }
-            }
-            
-            
-        } catch {
-            print(error.localizedDescription)
         }
         
     }
     
-    
-    func category(for transaction: Transaction) -> Category {
-        categories.first(where: { $0.id == transaction.categoryId }) ?? Category(id: 58, name: "Образование", emoji: "📚", isIncome: false)
+    private func fetchAccount() async {
+        Task {
+            do {
+                bankAccount = try await bankAccountService.fetchPrimaryAccount()
+            } catch {
+                print("Ошибка загрузки счета: \(error.localizedDescription)")
+            }
+            
+        }
     }
-
 }

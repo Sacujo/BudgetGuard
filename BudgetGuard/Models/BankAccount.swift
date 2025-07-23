@@ -7,12 +7,17 @@
 import Foundation
 
 
-struct BankAccount: Identifiable, Codable {
+struct BankAccount: Identifiable, Codable, Hashable{
     let id: Int
-    let userId: Int
     let name: String
     let balance: Decimal
-    let currency: String
-    let createdAt: Date
-    let updatedAt: Date
+    let currency: Currency
 }
+
+
+
+
+
+
+
+

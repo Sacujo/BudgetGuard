@@ -65,12 +65,10 @@ import SwiftUI
          } message: {
              Text("Вы уверены, что хотите удалить этот \(direction == .income ? "доход" : "расход")?")
          }
-//         .onAppear(perform: UIApplication.shared.addTapGestureRecognizer)
          .task { await viewModel.loadData() }
      }
      @ViewBuilder
      var editList: some View {
-//         Text("Hello")
          List {
              Section {
                  HStack {
