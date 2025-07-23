@@ -9,7 +9,6 @@ import SwiftUI
 
 struct TransactionRow: View {
     let transaction: Transaction
-    let category: Category
     
     var body: some View {
         HStack(spacing: 12) {
@@ -18,13 +17,13 @@ struct TransactionRow: View {
                     .fill(Color(.emojiBackground))
                     .frame(width: 22, height: 22)
                 
-                Text(String(category.emoji))
+                Text(String(transaction.category.emoji))
                     .font(.system(size: 12))
             }
             .frame(width: 34, height: 34)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(category.name)
+                Text(transaction.category.name)
                     .font(.body)
                 
                 if let comment = transaction.comment {

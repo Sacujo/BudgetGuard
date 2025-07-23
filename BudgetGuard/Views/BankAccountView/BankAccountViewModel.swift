@@ -38,12 +38,9 @@ final class BankAccountViewModel: ObservableObject {
         if formattedInput.range(of: pattern, options: .regularExpression) != nil, let newBalance = Decimal(string: formattedInput ) {
             let updatedAccount = BankAccount(
                 id: account.id,
-                userId: account.userId,
                 name: account.name,
                 balance: newBalance,
-                currency: selectedCurrency,
-                createdAt: account.createdAt,
-                updatedAt: Date()
+                currency: Currency(rawValue: selectedCurrency)!, // Поправить
             )
             
             do {

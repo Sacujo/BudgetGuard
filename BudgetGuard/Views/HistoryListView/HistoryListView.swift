@@ -85,14 +85,14 @@ struct HistoryListView: View {
                         HStack {
                             Text("Всего")
                             Spacer()
-                            Text("\(viewModel.totalAmount.formatted()) ₽")
+                            Text("\(viewModel.totalAmount.formatted()) \(viewModel.bankAccount?.currency.symbol ?? "")")
                                 .foregroundStyle(Color(.text))
                         }                    }
                     
                     Section(header: Text("Операции").font(.caption)) {
                         ForEach(viewModel.transactions) { transaction in
                             NavigationLink(destination: TransactionEditView(transaction, direction: viewModel.direction)) {
-                                TransactionRow(transaction: transaction, category: viewModel.category(for: transaction))
+                                TransactionRow(transaction: transaction)
                             }
                         }
                     }

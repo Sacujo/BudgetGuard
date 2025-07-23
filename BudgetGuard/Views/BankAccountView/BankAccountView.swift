@@ -30,8 +30,8 @@ struct BankAccountView: View {
                                     EditableBalanceCardView(balanceText: $viewModel.balanceInput)
                                     CurrencyCheckerView(selected: $viewModel.selectedCurrency)
                                 } else {
-                                    BalanceCardVIew(balance: account.balance, currency: account.currency, isBalanceHidden: $viewModel.isBalanceHidden)
-                                    CurrencyCardView(currencyCode: account.currency)
+                                    BalanceCardVIew(balance: account.balance, currency: account.currency.symbol, isBalanceHidden: $viewModel.isBalanceHidden)
+                                    CurrencyCardView(currencyCode: account.currency.symbol)
                                 }
                             }.padding(.horizontal)
                         } else {

@@ -5,7 +5,7 @@
 //  Created by Igor Guryan on 26.06.2025.
 //
 
-enum Currency: String, CaseIterable, Identifiable {
+enum Currency: String, CaseIterable, Identifiable, Codable {
     case usd = "USD"
     case rub = "RUB"
     case eur = "EUR"

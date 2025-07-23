@@ -87,12 +87,12 @@ import UIKit
      }
 
      // MARK: - Public Methods
-     func setupCell(with transaction: Transaction, category: Category?, currency: String, percent percentage: Int, delegate: UIViewController) {
-         titleLabel.text = category?.name ?? "Unknown"
+     func setupCell(with transaction: Transaction, percent percentage: Int, delegate: UIViewController) {
+         titleLabel.text = transaction.category.name
          commentLabel.text = transaction.comment
-         emojiLabel.text = String(category?.emoji ?? "‼️")
+         emojiLabel.text = String(transaction.category.emoji)
          percentageLabel.text = "\(percentage)%"
-         amountLabel.text = "\(transaction.amount.formatted()) \(currency.currencySymbol ?? "OOPS")"
+         amountLabel.text = "\(transaction.amount.formatted()) \(transaction.account.currency.symbol)"
      }
 
      // MARK: - Private Methods

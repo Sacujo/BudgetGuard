@@ -11,6 +11,7 @@ import Foundation
  final class CategoriesViewModel: ObservableObject {
      // MARK: - Properties
      private let categoriesService: CategoriesService
+     
 
      var filteredCategories: [Category] {
          guard !searchText.isEmpty else { return categories }
@@ -42,11 +43,13 @@ import Foundation
 
          do {
              categories = try await categoriesService.fetchCategories()
+             
          } catch {
              print(error.localizedDescription)
          }
      }
- }
+     
+     }
 
 // MARK: - Fuzzy Search Extension
  fileprivate extension String {

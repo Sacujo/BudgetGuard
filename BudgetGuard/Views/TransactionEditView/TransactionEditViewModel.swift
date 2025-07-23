@@ -48,7 +48,7 @@ final class TransactionEditViewModel: ObservableObject {
         await fetchCategories()
         await fetchAccount()
         if let transaction {
-            category = categories.first(where: { $0.id == transaction.categoryId })
+            category = transaction.category
         }
     }
     
@@ -64,19 +64,17 @@ final class TransactionEditViewModel: ObservableObject {
             case .adding:
                 Task {
                     do {
-                        let transaction = try await transactionsService.createTransaction(
+                        try await transactionsService.createTransaction(
                             Transaction(
                                 id: 1,
-                                accountId: bankAccount.id,
-                                categoryId: category.id,
+                                account: bankAccount,
+                                category: category,
                                 amount: amount,
                                 transactionDate: transactionDate,
-                                comment: comment == "" ? nil : comment,
-                                createdAt: Date(),
-                                updatedAt: Date()
+                                comment: comment == "" ? nil : comment
                             )
                         )
-                        print("Операция создана: \(transaction)")
+                        print("Операция создана")
                     } catch {
                         print("Ошибка создания операции: \(error.localizedDescription)")
                     }
@@ -89,16 +87,14 @@ final class TransactionEditViewModel: ObservableObject {
                     do {
                         let updated = Transaction(
                             id: transaction.id,
-                            accountId: bankAccount.id,
-                            categoryId: category.id,
+                            account: bankAccount,
+                            category: category,
                             amount: amount,
                             transactionDate: transactionDate,
                             comment: comment == "" ? nil : comment,
-                            createdAt: transaction.createdAt,
-                            updatedAt: Date()
                         )
-                       let transaction = try await transactionsService.updateTransaction(updated)
-                        print("Операция обновлена: \(transaction)")
+                       try await transactionsService.updateTransaction(updated)
+                        print("Операция обновлена: \(updated)")
                     } catch {
                         print("Ошибка обновлении операции: \(error.localizedDescription)")
                     }
@@ -142,9 +138,7 @@ final class TransactionEditViewModel: ObservableObject {
         do {
             bankAccount = try await bankAccountService.fetchPrimaryAccount()
             guard let accountCurrency = bankAccount?.currency else { return }
-            if let currency = Currency(rawValue: accountCurrency) {
-                self.currency = currency
-            }
+            self.currency = accountCurrency
         } catch {
             print("Ошибка загрузки счета: \(error.localizedDescription)")
         }
