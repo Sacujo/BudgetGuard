@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import PieChart // импортируем модуль
 
 enum DatePickerType: String {
      case start = "Период: начало"
@@ -36,7 +37,9 @@ final class AnalysisViewController: UIViewController {
     private var tableHeightConstraint: NSLayoutConstraint?
     private let scrollView = UIScrollView()
     private let contentView = UIView()
-    private var diagramView = UIView()
+    // Заменяем UIView на PieChartView
+    private let pieChartView = PieChartView()
+    private var firstChartLoad = true // флаг для первой загрузки
     
     private lazy var tableTitleLabel: UILabel = {
              let label = UILabel()
@@ -92,18 +95,18 @@ final class AnalysisViewController: UIViewController {
             scrollView.addSubview(contentView)
 
             contentView.addSubview(pickerTableView)
-            contentView.addSubview(diagramView)
+            contentView.addSubview(pieChartView)
             contentView.addSubview(tableTitleLabel)
             contentView.addSubview(transactionTableView)
 
-        diagramView.backgroundColor = .background
+        pieChartView.backgroundColor = .background
     }
     
     private func setupConstraints() {
              scrollView.translatesAutoresizingMaskIntoConstraints = false
              contentView.translatesAutoresizingMaskIntoConstraints = false
              pickerTableView.translatesAutoresizingMaskIntoConstraints = false
-             diagramView.translatesAutoresizingMaskIntoConstraints = false
+             pieChartView.translatesAutoresizingMaskIntoConstraints = false
              tableTitleLabel.translatesAutoresizingMaskIntoConstraints = false
              transactionTableView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -127,11 +130,11 @@ final class AnalysisViewController: UIViewController {
                  pickerTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
                  pickerTableView.heightAnchor.constraint(equalToConstant: 176),
 
-                 diagramView.topAnchor.constraint(equalTo: pickerTableView.bottomAnchor),
-                 diagramView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                 diagramView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                 diagramView.heightAnchor.constraint(equalToConstant: 185),
-                 tableTitleLabel.topAnchor.constraint(equalTo: diagramView.bottomAnchor, constant: 8),
+                 pieChartView.topAnchor.constraint(equalTo: pickerTableView.bottomAnchor),
+                 pieChartView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                 pieChartView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                 pieChartView.heightAnchor.constraint(equalToConstant: 185),
+                 tableTitleLabel.topAnchor.constraint(equalTo: pieChartView.bottomAnchor, constant: 8),
                  tableTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
 
                  transactionTableView.topAnchor.constraint(equalTo: tableTitleLabel.bottomAnchor, constant: 8),
@@ -244,6 +247,14 @@ extension AnalysisViewController: UITableViewDataSource, UITableViewDelegate {
      func reloadTransactionTableView() {
          transactionTableView.reloadData()
          tableHeightConstraint?.constant = CGFloat(presenter.transactions.count) * 60
+         // Группируем транзакции по категориям для PieChartView
+         let grouped = Dictionary(grouping: presenter.transactions, by: { $0.category.name })
+         let entities = grouped.map { (key, value) in
+             Entity(value: value.reduce(Decimal(0)) { $0 + $1.amount }, label: key)
+         }
+         // Теперь всегда используем анимацию, даже при первой загрузке
+         pieChartView.setEntities(entities, animated: true)
+         firstChartLoad = false
          UIView.animate(withDuration: 0.3) {
              self.view.layoutIfNeeded()
          }
