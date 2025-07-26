@@ -17,6 +17,8 @@ final class BankAccountViewModel: ObservableObject {
     @Published var isBalanceHidden = false
     @Published var balanceInput = ""
     @Published var selectedCurrency: String = Currency.rub.rawValue
+    @Published var balanceChanges: [(date: Date, change: Decimal)] = []
+    @Published var balanceHistory: [(date: Date, balance: Decimal)] = []
     
     func loadAccount() async {
         do {
@@ -62,6 +64,39 @@ final class BankAccountViewModel: ObservableObject {
             if let account = account {
                 balanceInput = "\(account.balance)"
             }
+        }
+    }
+    
+    // Загрузка истории баланса за 30 дней
+    func loadBalanceHistory() async {
+        guard let account = account else { return }
+        let calendar = Calendar.current
+        let endDate = calendar.startOfDay(for: Date())
+        guard let startDate = calendar.date(byAdding: .day, value: -29, to: endDate) else { return }
+        do {
+            let transactions = try await TransactionsService().fetchTransactions(accountId: account.id, from: startDate, to: endDate)
+            // Группируем транзакции по дню
+            var dailyChanges: [Date: Decimal] = [:]
+            for tx in transactions {
+                let day = calendar.startOfDay(for: tx.transactionDate)
+                // Прибавляем доходы, вычитаем расходы
+                let change = tx.category.isIncome ? tx.amount : -tx.amount
+                dailyChanges[day, default: 0] += change
+            }
+            // Считаем баланс на каждый день, начиная с 0 на первую дату
+            var history: [(date: Date, balance: Decimal)] = []
+            var currentBalance: Decimal = 0
+            for offset in 0...29 {
+                let day = calendar.date(byAdding: .day, value: -29 + offset, to: endDate)!
+                // Сначала добавляем баланс на начало дня
+                history.append((date: day, balance: currentBalance))
+                // Затем прибавляем изменения за этот день
+                let change = dailyChanges[day] ?? 0
+                currentBalance += change
+            }
+            self.balanceHistory = history
+        } catch {
+            print(error.localizedDescription)
         }
     }
 }

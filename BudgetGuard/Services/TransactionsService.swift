@@ -151,6 +151,17 @@ final class TransactionsService {
         }
     }
     
+    // Новый метод для получения транзакций по accountId
+    func fetchTransactions(accountId: Int, from startDate: Date, to endDate: Date) async throws -> [Transaction] {
+        let response: [TransactionResponseDTO] = try await client.request(.transactionsPeriod(accountId: accountId, startDate: startDate, endDate: endDate))
+        let transactions = response.map { $0.toDomain() }
+        return transactions.filter {
+            $0.transactionDate >= startDate && $0.transactionDate <= endDate
+        }.sorted {
+            $0.transactionDate > $1.transactionDate
+        }
+    }
+    
 //MARK: - Create Transaction
     func createTransaction(_ transaction: Transaction) async throws {
         let body = CreateTransactionRequest(from: transaction)
