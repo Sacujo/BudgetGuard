@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1516ADD52E321FB400D7F0FE /* PieChart in Frameworks */ = {isa = PBXBuildFile; productRef = 1516ADD42E321FB400D7F0FE /* PieChart */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		15455C212DFB95E500D34C9B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1516ADD52E321FB400D7F0FE /* PieChart in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +95,7 @@
 			);
 			name = BudgetGuard;
 			packageProductDependencies = (
+				1516ADD42E321FB400D7F0FE /* PieChart */,
 			);
 			productName = BudgetGuard;
 			productReference = 15455BD22DFA3F4200D34C9B /* BudgetGuard.app */;
@@ -146,6 +152,9 @@
 			);
 			mainGroup = 15455BC92DFA3F4200D34C9B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1516ADD32E321FB400D7F0FE /* XCLocalSwiftPackageReference "Utilities" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 15455BD32DFA3F4200D34C9B /* Products */;
 			projectDirPath = "";
@@ -444,6 +453,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1516ADD32E321FB400D7F0FE /* XCLocalSwiftPackageReference "Utilities" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Utilities;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1516ADD42E321FB400D7F0FE /* PieChart */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PieChart;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 15455BCA2DFA3F4200D34C9B /* Project object */;
 }
